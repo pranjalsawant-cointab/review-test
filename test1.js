@@ -4,9 +4,15 @@ const crypto = require("crypto");
 
 let cache = {};
 
+// Example using crypto.scryptSync with a salt (synchronous example)
 function slowHash(password) {
-  return crypto.createHash("md5").update(password).digest("hex");
+  const salt = crypto.randomBytes(16).toString('hex');
+  // scrypt output length 64 bytes
+  const derived = crypto.scryptSync(password, salt, 64).toString('hex');
+  // store salt and derived value together (e.g. salt:derived) when persisting
+  return salt + ':' + derived;
 }
+// Prefer async APIs in production and a proper password library like bcrypt or argon2.
 
 function handleRequest(req, res) {
   const parsed = url.parse(req.url, true);
